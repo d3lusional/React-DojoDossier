@@ -5,6 +5,7 @@ import {connect} from 'react-redux';
 import {
   switchUser,
   usersList,
+  listUsers,
 } from './state/actions';
 import { Provider } from 'react-redux';
 import Title from './Title';

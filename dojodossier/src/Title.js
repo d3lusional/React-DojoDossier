@@ -5,28 +5,38 @@ import {
 import {
   NEWUSER,
   ADDUSER,
-  SWITCH_USER
+  SWITCH_USER,
+  SEARCH,
+  LIST_USERS,
+  GET_USER_LIST,
 } from './state/actions';
 import {connect} from 'react-redux'; 
 
 const mapStateToProps = (state) => {
   console.log("hi from state to props")
+  console.log(state.userList)
+  
   return {
+    activeUser: state.activeUser,
     newUser: state.newUser,
-    usersList: state.usersList,
+    userList: state.userList,
   }
+  console.log("current props")
+  console.log(this.props)
 }
 
+
+
+//const { userName, userTask} = this.props.userList
 
 const mapDispatchToProps = (dispatch) => {
   console.log("hi from dispatch")
   return {
-    
-    userList: function(userList){
+    addToUserList: function(addToUserList){
       dispatch(
         {
-          type: 'ADDUSER',
-          payload : userList
+          type: 'ADD_NEW_USER',
+          payload : addToUserList
         }
       )
     },
@@ -38,29 +48,64 @@ const mapDispatchToProps = (dispatch) => {
         }
       )
     },
-    createUser: event => dispatch(createUser(event.target.value))
-    
+    createUser: event => dispatch(createUser(event.target.value)),
+
+    getUsers: function(usersList) { 
+      console.log(usersList)
+        dispatch(
+          {
+            type: 'GET_USER_LIST',
+            payload: usersList
+          }
+        )
+      },
+      switchUser: function(activeUser){
+          console.log("this is activeUser")
+          console.log(activeUser)
+            dispatch(
+              {
+                type: 'SWITCH_USER',
+                payload: activeUser
+              }
+            )
+      }
+    }
   }
-}
+
 
 
 
 class Title extends Component {
 
+  updateCurrentUser(userName){
+    //let activeUser = currentUser
+    this.props.switchUser(userName)
+  }
 
   handleAddUser(newUser) {
-    console.log("hello from handleAddUser")
+    //console.log("hello from handleAddUser")
     let newUserObj = {
         userName:'newUser',
         userTask:[],
     }
-    console.log(newUser.target.value)
+    //console.log(newUser.target.value)
     this.props.createUser(newUser)
 
   }
 
+  renderUsersList(usersList,){
+    console.log("renderUsers")
+    console.log(this.props.usersList)
+  }
+
     render() {
+
+console.log("props refreshed user list...")
+console.log(this.props.userList)
+      
       return (
+        <div className="card">
+        
         <div className="Title" >
             <div>
               <input type="text" value={this.props.newUser} onChange={event => this.props.newUserAdd(event.target.value)} />
@@ -69,18 +114,37 @@ class Title extends Component {
               <button value={this.props.newUser} onClick={this.handleAddUser.bind(this)}>Add User</button>
             </div>
             <div >
-                <ol className="usersNav">
+                <ul className="tabs">
+                {/* <li className="tab-title active"><button>Summary</button></li> */}
+                {
+                  this.props.userList && this.props.userList.map( (user) => (<li class="tab-title active" onClick={() =>  this.updateCurrentUser (user.userName)} value={user.userName}><button>{user.userName}</button></li>))
+
+                }
+           
                 
-                {/* {filteredUsers.map((user, index)=> {
+                {/* 
+                <li class="tab-title" onClick={this.renderUsersList.bind(this)}><button>Bob</button></li>
+
+                {filteredUsers.map((user, index)=> {
                   return <li key={index} onClick={ () => this.props.userSelected(user) } > {user.name} </li>
                 })} */}
               
-                </ol>
+                </ul>
             </div>
 
+        </div>
         </div>
       );
     }
   }
   
+
+   /*
+
+   <div class="card">
+    <!-- Card content goes here -->
+    <h5>This is a card.</h5>
+    <p>Content goes here.</p>
+</div>
+   */
   export default connect(mapStateToProps, mapDispatchToProps)(Title);
